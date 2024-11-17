@@ -5,7 +5,6 @@ from scrapy.exceptions import DropItem
 from scrapy.http import Response
 
 from pep_parse.items import PepParseItem
-
 from pep_parse.settings import ALLOWED_DOMAINS
 
 

@@ -7,10 +7,13 @@ from pep_parse.settings import BASE_DIR, FILE_NAME, RESULTS_DIR
 
 
 class PepParsePipeline:
-    def open_spider(self, spider) -> None:
+    def __init__(self):
         self.status_counts = defaultdict(int)
         self.result_dir = BASE_DIR / RESULTS_DIR
         self.result_dir.mkdir(exist_ok=True)
+
+    def open_spider(self, spider) -> None:
+        pass
 
     def process_item(self, item: Dict[str, str], spider) -> Dict[str, int]:
         self.status_counts[item['status']] += 1
