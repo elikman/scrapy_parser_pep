@@ -3,8 +3,7 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List
 
-from pep_parse.settings import RESULTS_DIR
-from pep_parse.settings import BASE_DIR, FILE_NAME
+from pep_parse.settings import BASE_DIR, FILE_NAME, RESULTS_DIR
 
 
 class PepParsePipeline:
@@ -19,7 +18,6 @@ class PepParsePipeline:
 
     def close_spider(self, spider) -> None:
         file_path: Path = self.result_dir / FILE_NAME
-        
         rows: List[Dict[str, str]] = [
             {'Статус': status, 'Количество': count}
             for status, count in self.status_counts.items()
