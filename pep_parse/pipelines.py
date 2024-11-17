@@ -1,40 +1,36 @@
 import csv
+from collections import defaultdict
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List
 
+from pep_parse.settings import RESULTS_DIR
 from pep_parse.settings import BASE_DIR, FILE_NAME
 
 
 class PepParsePipeline:
-    def __init__(self) -> None:
-        self._status_counts: Dict[str, int] = {}
-        self._total_peps: int = 0
-
     def open_spider(self, spider) -> None:
-        pass
+        self.status_counts = defaultdict(int)
+        self.result_dir = BASE_DIR / RESULTS_DIR
+        self.result_dir.mkdir(exist_ok=True)
 
     def process_item(self, item: Dict[str, str], spider) -> Dict[str, int]:
-        status: str = item['status']
-        if status in self._status_counts:
-            self._status_counts[status] += 1
-        else:
-            self._status_counts[status] = 1
-        self._total_peps += 1
+        self.status_counts[item['status']] += 1
         return item
 
     def close_spider(self, spider) -> None:
-        result_dir: Path = BASE_DIR / 'results'
-        result_dir.mkdir(exist_ok=True)
-        file_path: Path = result_dir / FILE_NAME
+        file_path: Path = self.result_dir / FILE_NAME
+        
+        rows: List[Dict[str, str]] = [
+            {'Статус': status, 'Количество': count}
+            for status, count in self.status_counts.items()
+        ]
+        rows.append({
+            'Статус': 'Total',
+            'Количество': sum(self.status_counts.values())
+        })
 
         with open(file_path, 'w', encoding='utf-8', newline='') as csvfile:
-            fieldnames: list[str] = ['Статус', 'Количество']
+            fieldnames: List[str] = ['Статус', 'Количество']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
-
-            for status, count in self._status_counts.items():
-                writer.writerow({'Статус': status, 'Количество': count})
-
-            writer.writerow(
-                {'Статус': 'Total', 'Количество': self._total_peps}
-            )
+            writer.writerows(rows)

@@ -6,8 +6,7 @@ from scrapy.http import Response
 
 from pep_parse.items import PepParseItem
 
-
-ALLOWED_DOMAINS: str = 'peps.python.org'
+from pep_parse.settings import ALLOWED_DOMAINS
 
 
 class PepSpider(scrapy.Spider):
